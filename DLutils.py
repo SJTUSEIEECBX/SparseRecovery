@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 
 
 class ComplexLinear(nn.Module):
@@ -32,8 +33,8 @@ class ComplexLinear(nn.Module):
 def complexmatmul(X, Y):
     X_real = X[:, :X.shape[1] // 2, :]
     X_imag = X[:, X.shape[1] // 2:, :]
-    Y_real = Y[:, :Y.shape[1] // 2, :].permute(0, 2, 1)
-    Y_imag = Y[:, Y.shape[1] // 2:, :].permute(0, 2, 1)
+    Y_real = Y[:, :Y.shape[1] // 2, :]
+    Y_imag = Y[:, Y.shape[1] // 2:, :]
     res_real = Y_real.matmul(X_real) - Y_imag.matmul(X_imag)
     res_imag = Y_real.matmul(X_imag) + Y_imag.matmul(X_real)
     res = torch.cat((res_real, res_imag), dim=1)
