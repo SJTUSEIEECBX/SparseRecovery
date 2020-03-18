@@ -45,21 +45,21 @@ def generate_active_channel(K, Ka, N_bs, P_set, Lp_min, Lp_max, N_ms, fc, sigma2
     return H_frq, H_ang, activity
 
 
-def generate_batched_active_channel(params):
-    H_f = np.zeros((params['simulations'], params['K'], params['N_bs'], params['P']), dtype=complex)
-    H_a = np.zeros((params['simulations'], params['K'], params['N_bs'], params['P']), dtype=complex)
-    act = np.zeros((params['simulations'], params['K']))
-    for i in range(params['simulations']):
-        H_frq, H_ang, activity = generate_active_channel(params['K'],
-                                                         params['Ka'],
-                                                         params['N_bs'],
-                                                         params['P_set'],
-                                                         params['Lp_min'],
-                                                         params['Lp_max'],
-                                                         params['N_ms'],
-                                                         params['fc'],
-                                                         params['sigma2alpha'],
-                                                         params['fs'])
+def generate_batched_active_channel(simulations, K, N_bs, P, Ka, P_set, Lp_min, Lp_max, N_ms, fc, sigma2alpha, fs):
+    H_f = np.zeros((simulations, K, N_bs, P), dtype=complex)
+    H_a = np.zeros((simulations, K, N_bs, P), dtype=complex)
+    act = np.zeros((simulations, K))
+    for i in range(simulations):
+        H_frq, H_ang, activity = generate_active_channel(K,
+                                                         Ka,
+                                                         N_bs,
+                                                         P_set,
+                                                         Lp_min,
+                                                         Lp_max,
+                                                         N_ms,
+                                                         fc,
+                                                         sigma2alpha,
+                                                         fs)
         H_f[i] = H_frq
         H_a[i] = H_ang
         act[i] = activity.squeeze()

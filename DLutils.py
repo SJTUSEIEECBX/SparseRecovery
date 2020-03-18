@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+def cpxmm(a_real, a_imag, b_real, b_imag):
+    res_real = a_real.matmul(b_real) - a_imag.matmul(b_imag)
+    res_imag = a_real.matmul(b_imag) + a_imag.matmul(b_real)
+    return res_real, res_imag
+
 
 class ComplexLinear(nn.Module):
     def __init__(self, M, N, activation=None):
@@ -92,3 +97,24 @@ def toarray(x, cuda=False):
     x = x.numpy()
     x = x[:, :x.shape[1] // 2] + x[:, x.shape[1] // 2:] * 1j
     return x
+
+
+class UnbalanceBCELoss(nn.Module):
+    def __init__(self, p=1):
+        super(UnbalanceBCELoss, self).__init__()
+        self.p = p
+    
+    def forward(self, predict, target):
+        pn = self.p / (self.p + 1)
+        loss = -pn * target * torch.log(predict + 1e-5) - (1 - pn) * (1 - target) * torch.log(1 - predict + 1e-5)
+        loss = loss.mean()
+        return loss
+    
+    def dec_p(self, rate=1):
+        if self.p > rate:
+            self.p -= rate
+        else:
+            print('cannot decrease p any more')
+            
+    def inc_p(self, rate):
+        self.p += rate
